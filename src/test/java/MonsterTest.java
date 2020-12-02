@@ -1,6 +1,8 @@
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.sql2o.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class MonsterTest {
 
@@ -14,9 +16,12 @@ public class MonsterTest {
     }
 
     @Test
-    public void Monster_instantiatesWithName_String() {
+    public void save_recordsTimeOfCreationInDatabase() {
         Monster testMonster = new Monster("Bubbles", 1);
-        assertEquals("Bubbles", testMonster.getName());
+        testMonster.save();
+        Timestamp savedMonsterBirthday = Monster.find(testMonster.getId()).getBirthday();
+        Timestamp rightNow = new Timestamp(new Date().getTime());
+        assertEquals(rightNow, savedMonsterBirthday);
     }
 
     @Test
@@ -173,6 +178,23 @@ public class MonsterTest {
             testMonster.sleep();
         }
     }
-
+    @Test
+    public void monster_sleepLevelCannotGoBeyondMaxValue(){
+        Monster testMonster = new Monster("Bubbles", 1);
+        for(int i = Monster.MIN_ALL_LEVELS; i <= (Monster.MAX_SLEEP_LEVEL); i++){
+            try {
+                testMonster.sleep();
+            } catch (UnsupportedOperationException exception){ }
+        }
+        assertTrue(testMonster.getSleepLevel() <= Monster.MAX_SLEEP_LEVEL);
+    }
+    @Test
+    public void save_recordsTimeOfCreationInDatabase() {
+        Monster testMonster = new Monster("Bubbles", 1);
+        testMonster.save();
+        Timestamp savedMonsterBirthday = Monster.find(testMonster.getId()).getBirthday();
+        Timestamp rightNow = new Timestamp(new Date().getTime());
+        assertEquals(rightNow, savedMonsterBirthday);
+    }
 
 }
