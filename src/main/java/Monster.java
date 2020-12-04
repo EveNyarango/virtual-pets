@@ -1,3 +1,4 @@
+
 import org.sql2o.Connection;
 
 import java.sql.Timestamp;
@@ -13,7 +14,6 @@ public abstract class Monster {
     public int foodLevel;
     public int sleepLevel;
     public int playLevel;
-    public String type;
 
     public Timestamp birthday;
     public Timestamp lastSlept;
@@ -26,6 +26,7 @@ public abstract class Monster {
     public static final int MIN_ALL_LEVELS = 0;
 
     public Timer timer;
+    public String type;
 
 //    public Monster(String name, int personId) {
 //        this.name = name;
@@ -57,10 +58,11 @@ public abstract class Monster {
 
     public void save() {
         try(Connection con = DB.sql2o.open()) {
-            String sql = "INSERT INTO monsters (name, personId, birthday) VALUES (:name, :personId, now())";
+            String sql = "INSERT INTO monsters (name, personId, birthday, type) VALUES (:name, :personId, now(), :type)";
             this.id = (int) con.createQuery(sql, true)
                     .addParameter("name", this.name)
                     .addParameter("personId", this.personId)
+                    .addParameter("type", this.type)
                     .executeUpdate()
                     .getKey();
         }
@@ -166,5 +168,14 @@ public abstract class Monster {
             }
         };
         this.timer.schedule(timerTask, 0, 600);
+    }
+
+    public void delete() {
+        try(Connection con = DB.sql2o.open()) {
+            String sql = "DELETE FROM monsters WHERE id = :id;";
+            con.createQuery(sql)
+                    .addParameter("id", this.id)
+                    .executeUpdate();
+        }
     }
 }

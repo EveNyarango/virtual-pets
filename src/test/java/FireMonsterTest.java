@@ -298,4 +298,22 @@ public class FireMonsterTest {
         }
     }
 
+    @Test
+    public void kindling_recordsTimeLastKindlingInDatabase() {
+        FireMonster testFireMonster = new FireMonster("Bubbles", 1);
+        testFireMonster.save();
+        testFireMonster.kindling();
+        Timestamp savedFireMonsterLastKindling = FireMonster.find(testFireMonster.getId()).getLastKindling();
+        Timestamp rightNow = new Timestamp(new Date().getTime());
+        assertEquals(DateFormat.getDateTimeInstance().format(rightNow), DateFormat.getDateTimeInstance().format(savedFireMonsterLastKindling));
+    }
+
+    @Test
+    public void delete_deletesFireMonster_true() {
+        FireMonster testFireMonster = new FireMonster("Bubbles", 1);
+        testFireMonster.save();
+        testFireMonster.delete();
+        assertEquals(null, FireMonster.find(testFireMonster.getId()));
+    }
+
 }
